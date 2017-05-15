@@ -12,7 +12,7 @@ var MovieSchema = new Schema({
     ref: 'Category'
   },
   name: String,
-  url: String,
+  url: Array,
   createAt: {
     type: Date,
     default: Date.now()

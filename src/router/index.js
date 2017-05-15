@@ -3,10 +3,6 @@ import Router from 'vue-router'
 import UserHome from '@/components/UserHome'
 import UserList from '@/components/userList/'
 import UserDetail from '@/components/userDetail/'
-// import AdminHome from '@/components/AdminHome'
-import CenterHome from '@/components/CenterHome'
-import MenuManagement from '@/components/menuManagement'
-import MenuItem from '@/components/menuItem'
 
 Vue.use(Router)
 
@@ -19,14 +15,6 @@ export default new Router({
       children: [
         { path: '/user/list', component: UserList },
         { path: '/user/detail', component: UserDetail }
-      ]
-    }, {
-      path: '/center',
-      component: CenterHome,
-      redirect: '/center/menu-management',
-      children: [
-        { path: '/center/menu-management', component: MenuManagement },
-        { path: '/center/menu-item', component: MenuItem }
       ]
     }
   ]

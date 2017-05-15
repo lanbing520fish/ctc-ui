@@ -23,9 +23,6 @@
           </li>
         </ul>
       </div>
-      <div v-if="$store.state.role==='admin'" class="admin-center">
-        <router-link to="/center" @click.native="toggleDirectoryId('')" class="btn-admin">管理中心</router-link>
-      </div>
     </div>
   </div>
 </template>

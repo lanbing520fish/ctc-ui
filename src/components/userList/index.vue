@@ -9,13 +9,13 @@
           <div class="nophoto"><img src="./zanwu.jpg" alt=""></div>
         </li>
         <li v-for="item in movies">
-          <router-link :to="{path: '/user/detail', query: {movieId: item._id}}">
-            <div class="category-img"><img :src="item.url" alt=""></div>
+            <div class="category-img">
+              <v-imageView :imgArr="item.url"></v-imageView>
+            </div>
             <div class="category-msg">
               <div class="category-title">{{item.name}}</div>
               <div class="category-date">{{moment(item.createAt).format('YYYY-MM-DD')}}</div>
             </div>
-          </router-link>
         </li>
       </ul>
     </div>
@@ -48,8 +48,9 @@
   </div>
 </template>
 <script>
-const ERR_OK = 0;
+import imageView from '@/components/imageView/';
 
+const ERR_OK = 0;
 export default {
   data() {
       return {
@@ -118,6 +119,9 @@ export default {
         this.$refs[formName].resetFields();
         this.dialogFormVisible = false;
       }
+    },
+    components: {
+      'v-imageView': imageView
     }
 };
 </script>
@@ -167,13 +171,11 @@ export default {
   position: absolute;
   left: 0;
   bottom: 0;
+  z-index: 1;
   width: 100%;
   height: 39px;
   line-height: 39px;
   background: #383838;
-  z-index: 999;
-  filter: alpha(opacity=70);
-  -moz-opacity: 0.7;
   opacity: 0.7;
 }
 
