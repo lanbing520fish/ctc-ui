@@ -20,6 +20,7 @@
           <li v-if="categories.length===0" class="nav-li nocategory">暂无分类</li>
           <li v-for="item in categories" @click.prevent="toggleCategoryId(item._id)" :class="['nav-li', {'nav-li-select': categoryId===item._id}]">
             <router-link to="/user/list">{{item.name}}</router-link>
+            <i v-if="$store.state.role==='admin'" class="el-icon-close close-btn" @click="del(item)"></i>
           </li>
         </ul>
       </div>
@@ -81,11 +82,37 @@ export default {
           return false;
         }
       });
+    },
+    del(obj) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$http.delete('/api/del/category', {
+          params: {
+            categoryId: obj._id
+          }
+        }).then((res) => {
+          res = res.body;
+          if (res.errno === ERR_OK) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+            // this.$store.dispatch('fetchMovies');
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      })
     }
   }
 };
 </script>
-
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .nav-box {
@@ -142,6 +169,16 @@ export default {
   border-radius: 5px;
   color: #5d5d5d;
   cursor: pointer;
+}
+
+.close-btn {
+  color: #bdbdbd;
+  font-size: 12px;
+}
+
+.close-btn:focus,
+.close-btn:hover {
+  color: #fff;
 }
 
 .nav li.nav-li a {

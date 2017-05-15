@@ -9,13 +9,17 @@
           <div class="nophoto"><img src="./zanwu.jpg" alt=""></div>
         </li>
         <li v-for="item in movies">
-            <div class="category-img">
-              <v-imageView :imgArr="item.url"></v-imageView>
-            </div>
-            <div class="category-msg">
-              <div class="category-title">{{item.name}}</div>
-              <div class="category-date">{{moment(item.createAt).format('YYYY-MM-DD')}}</div>
-            </div>
+          <div v-if="$store.state.role==='admin'" class="catagory-edit">
+            <el-button type="text" @click="edit(item)" class="close-btn"><i class="el-icon-edit"></i></el-button>
+            <el-button type="text" @click="del(item)" class="close-btn"><i class="el-icon-delete"></i></el-button>
+          </div>
+          <div class="category-img">
+            <v-imageView :imgArr="item.url"></v-imageView>
+          </div>
+          <div class="category-msg">
+            <div class="category-title">{{item.name}}</div>
+            <div class="category-date">{{moment(item.createAt).format('YYYY-MM-DD')}}</div>
+          </div>
         </li>
       </ul>
     </div>
@@ -118,6 +122,37 @@ export default {
       resetForm(formName) {
         this.$refs[formName].resetFields();
         this.dialogFormVisible = false;
+      },
+      edit(obj) {
+        this.dialogFormVisible = true;
+        _.assign(this.ruleForm, obj);
+      },
+      del(obj) {
+        this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$http.delete('/api/del/movie', {
+            params: {
+              movieId: obj._id
+            }
+          }).then((res) => {
+            res = res.body;
+            if (res.errno === ERR_OK) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              });
+              this.$store.dispatch('fetchMovies');
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        })
       }
     },
     components: {
@@ -162,6 +197,29 @@ export default {
   height: 189px;
 }
 
+.catagory-edit {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 100%;
+  height: 30px;
+  padding-right: 10px;
+  line-height: 30px;
+  background-color: rgba(0, 0, 0, .6);
+  text-align: right;
+}
+
+.close-btn {
+  color: #bdbdbd;
+}
+
+.close-btn:focus,
+.close-btn:hover {
+  color: #fff;
+}
+
 .category-img img {
   width: 282px;
   height: 211px;
@@ -175,8 +233,7 @@ export default {
   width: 100%;
   height: 39px;
   line-height: 39px;
-  background: #383838;
-  opacity: 0.7;
+  background-color: rgba(0, 0, 0, .6);
 }
 
 .category-title {

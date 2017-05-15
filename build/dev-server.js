@@ -7,6 +7,7 @@ if (!process.env.NODE_ENV) {
 
 var opn = require('opn')
 var path = require('path')
+var _ = require('lodash')
 var express = require('express')
 var webpack = require('webpack')
 var proxyMiddleware = require('http-proxy-middleware')
@@ -80,14 +81,67 @@ apiRouters.get('/movies', function(req, res) {
   })
 })
 
-// 详情
-apiRouters.get('/detail', function(req, res) {
+// del movie
+apiRouters.delete('/del/movie', urlencodedParser, function(req, res) {
   var movieId = req.query.movieId
-  Movie.findById(movieId, function(err, movie) {
-    res.json({
-      errno: 0,
-      movie: movie
-    })
+  Movie.remove({ _id: movieId }, function(err, movie) {
+    if (err) {
+      console.log(err)
+    } else {
+      res.json({
+        errno: 0,
+        data: movie
+      })
+    }
+  })
+})
+
+// del category
+apiRouters.delete('/del/category', urlencodedParser, function(req, res) {
+  var categoryId = req.query.categoryId
+  // Category.findById(categoryId, function(err, category) {
+  //   if (err) {
+  //     console.log(err)
+  //   }
+  //   console.log(category.movies, 'category.movies');
+  //   _.map(category.movies, (item) => {
+  //     Movie.remove({ _id: item }),
+  //       function(err, movie) {
+  //         if (err) {
+  //           console.log(err)
+  //         } else {
+  //           res.json({
+  //             errno: 0,
+  //             data: movie
+  //           })
+  //         }
+  //       }
+  //   })
+  // })
+  Category.remove({ _id: categoryId }, function(err, category) {
+    if (err) {
+      console.log(err)
+    } else {
+      res.json({
+        errno: 0,
+        data: category
+      })
+    }
+  })
+})
+
+// del directory
+apiRouters.delete('/del/directory', urlencodedParser, function(req, res) {
+  var directoryId = req.query.directoryId
+  Directory.remove({ _id: directoryId }, function(err, directory) {
+    if (err) {
+      console.log(err)
+    } else {
+      res.json({
+        errno: 0,
+        data: directory
+      })
+    }
   })
 })
 
@@ -145,35 +199,55 @@ apiRouters.post('/admin/category', urlencodedParser, function(req, res) {
 // 添加子项
 apiRouters.post('/admin/movie', urlencodedParser, function(req, res) {
   var movieObj = req.body
-  var _movie = new Movie(movieObj)
+  var movieId = movieObj._id
   var categoryId = movieObj.category
+  var _movie
 
-  _movie.save(function(err, movie) {
-    if (err) {
-      console.log(err)
-    }
-    if (categoryId) {
-      Category.findById(categoryId, function(err, category) {
+  if (movieId) {
+    Movie.findById(movieId, function(err, movie) {
+      if (err) {
+        console.log(err)
+      }
+      _movie = _.assign(movie, movieObj)
+      _movie.save(function(err, movie) {
         if (err) {
           console.log(err)
         }
-        category.movies.push(movie._id)
-        category.save(function(err, category) {
+        res.json({
+          errno: 0,
+          data: movie
+        })
+      })
+    })
+  } else {
+    _movie = new Movie(movieObj)
+    _movie.save(function(err, movie) {
+      if (err) {
+        console.log(err)
+      }
+      if (categoryId) {
+        Category.findById(categoryId, function(err, category) {
           if (err) {
             console.log(err)
           }
-          res.json({
-            errno: 0,
-            data: category.movies
+          category.movies.push(movie._id)
+          category.save(function(err, category) {
+            if (err) {
+              console.log(err)
+            }
+            res.json({
+              errno: 0,
+              data: category.movies
+            })
           })
         })
-      })
-    } else {
-      res.json({
-        errno: 1
-      })
-    }
-  })
+      } else {
+        res.json({
+          errno: 1
+        })
+      }
+    })
+  }
 })
 
 app.use('/api', apiRouters)

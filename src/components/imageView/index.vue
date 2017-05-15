@@ -2,10 +2,10 @@
   <div>
     <transition name="slide-fade" class="fadeView">
       <div v-if="show">
-        <image-view :imgArr="imgArr" :showImageView="true" :imageIndex="imageIndex" v-on:hideImage="hideImageView"></image-view>
+        <image-view :imgArr="imgArr.split(' ', 1)" :showImageView="true" :imageIndex="imageIndex" v-on:hideImage="hideImageView"></image-view>
       </div>
     </transition>
-    <img v-for="(item, index) in imgArr" :src="item" @click="selectImg(index)">
+    <img :src="imgArr" @click="selectImg()">
   </div>
 </template>
 
@@ -18,8 +18,8 @@ export default {
   },
   props: {
     imgArr: {
-      type: Array,
-      default: [],
+      type: String,
+      default: '',
     }
   },
   data() {
@@ -37,9 +37,8 @@ export default {
     hideImageView() {
       this.show = false
     },
-    selectImg(index) {
+    selectImg() {
       this.show = true
-      this.imageIndex = index
     }
   }
 }

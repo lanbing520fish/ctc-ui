@@ -19,6 +19,7 @@
           </li>
           <li v-if="directories.length===0" class="notAvailable"><a href="javascript:void(0)">暂无目录</a></li>
           <li v-for="item in directories" :class="['menu_li', {menu_hover: directoryId===item._id}]">
+            <i v-if="$store.state.role==='admin'" class="el-icon-close close-btn" @click="del(item)"></i>
             <router-link to="/user/list" @click.native="toggleDirectoryId(item._id)">{{item.name}}</router-link>
           </li>
         </ul>
@@ -79,6 +80,33 @@ export default {
           return false;
         }
       });
+    },
+    del(obj) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$http.delete('/api/del/directory', {
+          params: {
+            directoryId: obj._id
+          }
+        }).then((res) => {
+          res = res.body;
+          if (res.errno === ERR_OK) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+            // this.$store.dispatch('fetchMovies');
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      })
     }
   }
 };
@@ -137,6 +165,7 @@ export default {
 }
 
 .menu ul li {
+  position: relative;
   float: left;
   display: inline-block;
   height: 50px;
@@ -166,6 +195,19 @@ export default {
 .notAvailable:hover a,
 .addcatalog a {
   color: #fa4f94;
+}
+
+.close-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #bdbdbd;
+  cursor: pointer;
+}
+
+.close-btn:focus,
+.close-btn:hover {
+  color: #fff;
 }
 
 .addcatalog img {
