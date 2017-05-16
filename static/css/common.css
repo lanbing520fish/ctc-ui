@@ -18,3 +18,68 @@ a {
   width: 1200px;
   margin: 0 auto;
 }
+
+.el-input__inner:hover {
+  border-color: #f76ca4;
+}
+
+.el-input__inner:focus {
+  outline: 0;
+  border-color: #f76ca4;
+}
+
+.el-button--primary {
+  color: #fff;
+  background-color: #fa4f94;
+  border-color: #fa4f94;
+}
+.el-button--primary:focus{
+  background: #fa4f94;
+  border-color: #fa4f94;
+  color: #fff;
+}
+.el-button--primary:hover {
+  background: #fa52aa;
+  border-color: #fa52aa;
+  color: #fff;
+}
+
+.el-button--default {
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  background: #ffe3ee;
+  border: 1px solid #fa4f94;
+  color: #ef3882;
+  margin: 0;
+  padding: 10px 15px;
+  border-radius: 4px;
+}
+.el-button--default:focus, .el-button--default:hover {
+  color: #fa52aa;
+  border-color: #fa52aa;
+}
+.el-dialog__header{
+  height: 41px;
+  line-height:41px;
+  background: #fa4f94;
+  padding: 0 15px;
+  color: #fff;
+}
+.el-dialog__title{
+  color: #fff;
+}
+.el-dialog__close {
+  cursor: pointer;
+  color: #fff;
+}
+.el-dialog__close:hover {
+  color: #f0f0f0;
+}
+.el-dialog__footer{
+  background: #fafafa;
+  border-top: 1px solid #e2e2e2;
+  padding: 19px 0 17px 0;
+  text-align: center;
+}
