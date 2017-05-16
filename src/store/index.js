@@ -49,23 +49,31 @@ const store = new Vuex.Store({
     },
     fetchDirectories({ commit, state }) {
       Vue.http.get('/api/directories').then(res => {
-        commit("FETCH_DIRECTORIES", res.body.data)
-        commit('TOGGLE_DIRECTORY_ID', res.body.data[0]._id)
-        Vue.http.get('/api/categories', {
-          params: {
-            directoryId: state.directoryId
-          }
-        }).then(res => {
-          commit("FETCH_CATEGORIES", res.body.data);
-          commit('TOGGLE_CATEGORY_ID', res.body.data[0]._id);
-          Vue.http.get('/api/movies', {
+        if (res.body.data.length===0) {
+          commit("FETCH_DIRECTORIES", [])
+          commit('TOGGLE_DIRECTORY_ID', '')
+          commit("FETCH_CATEGORIES", []);
+          commit('TOGGLE_CATEGORY_ID', '');
+          commit("FETCH_MOVIES", []);
+        } else {
+          commit("FETCH_DIRECTORIES", res.body.data)
+          commit('TOGGLE_DIRECTORY_ID', res.body.data[0]._id)
+          Vue.http.get('/api/categories', {
             params: {
-              categoryId: state.categoryId
+              directoryId: state.directoryId
             }
           }).then(res => {
-            commit("FETCH_MOVIES", res.body.data);
+            commit("FETCH_CATEGORIES", res.body.data);
+            commit('TOGGLE_CATEGORY_ID', res.body.data[0]._id);
+            Vue.http.get('/api/movies', {
+              params: {
+                categoryId: state.categoryId
+              }
+            }).then(res => {
+              commit("FETCH_MOVIES", res.body.data);
+            })
           })
-        })
+        }
       })
     },
     fetchCategories({ commit, state }) {
