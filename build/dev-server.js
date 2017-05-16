@@ -91,22 +91,23 @@ apiRouters.delete('/del/movie', urlencodedParser, function(req, res) {
       Category.findById(movie.category, function(err, category) {
         if (err) {
           console.log(err)
-        }
-        category.movies.splice(category.movies.indexOf(movie._id), 1)
-        category.save(function(err, category) {
-          if (err) {
-            console.log(err)
-          }
-          Movie.remove({ _id: movie._id }, function(err, movie) {
+        } else {
+          category.movies.splice(category.movies.indexOf(movie._id), 1)
+          category.save(function(err, category) {
             if (err) {
               console.log(err)
-            } else {
-              res.json({
-                errno: 0
-              })
             }
+            Movie.remove({ _id: movie._id }, function(err, movie) {
+              if (err) {
+                console.log(err)
+              } else {
+                res.json({
+                  errno: 0
+                })
+              }
+            })
           })
-        })
+        }
       })
     }
   })
@@ -119,25 +120,35 @@ apiRouters.delete('/del/category', urlencodedParser, function(req, res) {
     if (err) {
       console.log(err)
     } else {
+      _.map(category.movies, function(item, index) {
+        Movie.remove({ _id: item }, function(err, movie) {
+          if (err) {
+            console.log(err);
+          } else {
+            // console.log('del movies OK.')
+          }
+        })
+      })
       Directory.findById(category.directory, function(err, directory) {
         if (err) {
           console.log(err)
-        }
-        directory.categories.splice(directory.categories.indexOf(category._id), 1)
-        directory.save(function(err, directory) {
-          if (err) {
-            console.log(err)
-          }
-          Category.remove({ _id: category._id }, function(err, category) {
+        } else {
+          directory.categories.splice(directory.categories.indexOf(category._id), 1)
+          directory.save(function(err, directory) {
             if (err) {
               console.log(err)
-            } else {
-              res.json({
-                errno: 0
-              })
             }
+            Category.remove({ _id: category._id }, function(err, category) {
+              if (err) {
+                console.log(err)
+              } else {
+                res.json({
+                  errno: 0
+                })
+              }
+            })
           })
-        })
+        }
       })
     }
   })
@@ -146,12 +157,42 @@ apiRouters.delete('/del/category', urlencodedParser, function(req, res) {
 // del directory
 apiRouters.delete('/del/directory', urlencodedParser, function(req, res) {
   var directoryId = req.query.directoryId
-  Directory.remove({ _id: directoryId }, function(err, directory) {
+  Directory.findById(directoryId, function(err, directory) {
     if (err) {
       console.log(err)
     } else {
-      res.json({
-        errno: 0
+      _.map(directory.categories, function(item, index) {
+        Category.findById(item, function(err, category) {
+          if (err) {
+            console.log(err)
+          } else {
+            _.map(category.movies, function(item, index) {
+              Movie.remove({ _id: item }, function(err, movie) {
+                if (err) {
+                  console.log(err)
+                } else {
+                  // console.log('del movies OK.')
+                }
+              })
+            })
+            Category.remove({ _id: category._id }, function(err, category) {
+              if (err) {
+                console.log(err)
+              } else {
+                // console.log('del categories OK.')
+              }
+            })
+          }
+        })
+      })
+      Directory.remove({ _id: directoryId }, function(err, directory) {
+        if (err) {
+          console.log(err)
+        } else {
+          res.json({
+            errno: 0
+          })
+        }
       })
     }
   })

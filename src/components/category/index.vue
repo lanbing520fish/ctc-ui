@@ -18,7 +18,7 @@
             <span v-popover:popover><img src="./addclass.png" alt="">添加分类</span>
           </li>
           <li v-if="categories.length===0" class="nav-li nocategory">暂无分类</li>
-          <li v-for="item in categories" @click.prevent="toggleCategoryId(item._id)" :class="['nav-li', {'nav-li-select': categoryId===item._id}]">
+          <li v-if="categories.length>0" v-for="item in categories" @click.prevent="toggleCategoryId(item._id)" :class="['nav-li', {'nav-li-select': categoryId===item._id}]">
             <router-link to="/user/list">{{item.name}}</router-link>
             <i v-if="$store.state.role==='admin'" class="el-icon-close close-btn" @click="del(item)"></i>
           </li>

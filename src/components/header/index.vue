@@ -18,7 +18,7 @@
             <a v-popover:popover href="javascript:void(0)"><img src="./addcatalog.png" alt="">添加目录</a>
           </li>
           <li v-if="directories.length===0" class="notAvailable"><a href="javascript:void(0)">暂无目录</a></li>
-          <li v-for="item in directories" :class="['menu_li', {menu_hover: directoryId===item._id}]">
+          <li v-if="directories.length>0" v-for="item in directories" :class="['menu_li', {menu_hover: directoryId===item._id}]">
             <i v-if="$store.state.role==='admin'" class="el-icon-close close-btn" @click="del(item)"></i>
             <router-link to="/user/list" @click.native="toggleDirectoryId(item._id)">{{item.name}}</router-link>
           </li>
