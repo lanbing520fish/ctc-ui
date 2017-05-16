@@ -100,7 +100,7 @@ export default {
               type: 'success',
               message: '删除成功!'
             });
-            // this.$store.dispatch('fetchMovies');
+            this.$store.dispatch('fetchCategories');
           }
         })
       }).catch(() => {

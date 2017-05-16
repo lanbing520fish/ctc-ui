@@ -84,13 +84,29 @@ apiRouters.get('/movies', function(req, res) {
 // del movie
 apiRouters.delete('/del/movie', urlencodedParser, function(req, res) {
   var movieId = req.query.movieId
-  Movie.remove({ _id: movieId }, function(err, movie) {
+  Movie.findById(movieId, function(err, movie) {
     if (err) {
       console.log(err)
     } else {
-      res.json({
-        errno: 0,
-        data: movie
+      Category.findById(movie.category, function(err, category) {
+        if (err) {
+          console.log(err)
+        }
+        category.movies.splice(category.movies.indexOf(movie._id), 1)
+        category.save(function(err, category) {
+          if (err) {
+            console.log(err)
+          }
+          Movie.remove({ _id: movie._id }, function(err, movie) {
+            if (err) {
+              console.log(err)
+            } else {
+              res.json({
+                errno: 0
+              })
+            }
+          })
+        })
       })
     }
   })
@@ -99,32 +115,29 @@ apiRouters.delete('/del/movie', urlencodedParser, function(req, res) {
 // del category
 apiRouters.delete('/del/category', urlencodedParser, function(req, res) {
   var categoryId = req.query.categoryId
-  // Category.findById(categoryId, function(err, category) {
-  //   if (err) {
-  //     console.log(err)
-  //   }
-  //   console.log(category.movies, 'category.movies');
-  //   _.map(category.movies, (item) => {
-  //     Movie.remove({ _id: item }),
-  //       function(err, movie) {
-  //         if (err) {
-  //           console.log(err)
-  //         } else {
-  //           res.json({
-  //             errno: 0,
-  //             data: movie
-  //           })
-  //         }
-  //       }
-  //   })
-  // })
-  Category.remove({ _id: categoryId }, function(err, category) {
+  Category.findById(categoryId, function(err, category) {
     if (err) {
       console.log(err)
     } else {
-      res.json({
-        errno: 0,
-        data: category
+      Directory.findById(category.directory, function(err, directory) {
+        if (err) {
+          console.log(err)
+        }
+        directory.categories.splice(directory.categories.indexOf(category._id), 1)
+        directory.save(function(err, directory) {
+          if (err) {
+            console.log(err)
+          }
+          Category.remove({ _id: category._id }, function(err, category) {
+            if (err) {
+              console.log(err)
+            } else {
+              res.json({
+                errno: 0
+              })
+            }
+          })
+        })
       })
     }
   })
@@ -138,8 +151,7 @@ apiRouters.delete('/del/directory', urlencodedParser, function(req, res) {
       console.log(err)
     } else {
       res.json({
-        errno: 0,
-        data: directory
+        errno: 0
       })
     }
   })
